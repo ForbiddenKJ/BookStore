@@ -1,197 +1,240 @@
+// Includes
+
 #include <iostream>
 #include <string>
 #include <array>
+
+// FUNCTION Clear Screen
 
 void clear(){
   std::cout << "\x1B[2J\x1B[H";
 }
 
-int close(){
-  clear();
-  std::cout << "Closing";
-  return 0;
-};
+// CLASS Backend Class
 
 class BookStore{
 public:
+
+  // STRUCTURE Book Struct
+
   struct Book{
-    unsigned int id;
+    int id;
     std::string name;
-    std::string authorFirst;
-    std::string authorSecond;
+    std::string authorName;
     float price;
-    std::string authorName = authorFirst + " " + authorSecond;
   };
 
+  // VARIABLES inStore Variables
+
   Book inStore[128];
-  unsigned int inStoreNext;
+  int inStoreNext;
 
-  Book addBook(int id,
-               std::string name,
-               std::string authorFirst,
-               std::string authorSecond,
-               float price)
-  {
-    inStore[inStoreNext].id = id;
-    inStore[inStoreNext].name = name;
-    inStore[inStoreNext].authorFirst = authorFirst;
-    inStore[inStoreNext].authorSecond = authorSecond;
-    inStore[inStoreNext].price = price;
-    inStore[inStoreNext].authorName = inStore[inStoreNext].authorFirst + " " + inStore[inStoreNext].authorSecond;
+  // FUNCTION Add Book
 
-    inStoreNext++;
+  void addBook(Book book){
 
-    return inStore[inStoreNext - 1];
-  }
+    // Set Values For inStore Index
 
-  Book addBook(Book book){
-
-    inStore[inStoreNext].id = book.id;
-    inStore[inStoreNext].name = book.name;
-    inStore[inStoreNext].authorFirst = book.authorFirst;
-    inStore[inStoreNext].authorSecond = book.authorSecond;
-    inStore[inStoreNext].price = book.price;
+    inStore[inStoreNext].id         = book.id;
+    inStore[inStoreNext].name       = book.name;
     inStore[inStoreNext].authorName = book.authorName;
+    inStore[inStoreNext].price      = book.price;
+
+    // Increment inStoreNext By 1
 
     inStoreNext++;
-
-    return inStore[inStoreNext - 1];
   }
 
-  int length(){ return (sizeof(inStore)/sizeof(*inStore)); }
+  // FUNCTION Remove Book
 
-  bool compare(Book b1, Book b2){
-    int total = 0;
+  void removeBook(int id){
 
-    if (b1.name == b2.name){
-      total++;
-    }
+    // Set Values To Default
 
-    if (b1.authorName == b2.authorName){
-      total++;
-    }
+    inStore[inStoreNext].id         = -1;
+    inStore[inStoreNext].name       = "";
+    inStore[inStoreNext].authorName = "";
+    inStore[inStoreNext].price      = -1;
 
-    if (b1.price == b2.price){
-      total++;
-    }
+    // Decrement inStoreNext By 1
 
-    if (total == 3){
-      return true;
-    }
-
-    if (total != 3){
-      return false;
-    }
-
-    return false;
+    inStoreNext--;
   }
 
+  // FUNCTION Find Book
+
+  int findBook(Book book){
+
+    // Linear Search
+
+    for (int i = 0; i < inStoreNext; i++){
+      int total;
+
+      if (inStore[i].name == book.name){
+        total++;
+      }
+
+      if (inStore[i].id == book.id){
+        total++;
+      }
+
+      if (inStore[i].authorName == book.authorName){
+        total++;
+      }
+
+      if (inStore[i].price == book.price){
+        total++;
+      }
+
+      if (total >= 4){
+        return i;
+      }
+
+    }
+
+    // Return -1 If book Not In inStore
+
+    return -1;
+  }
+
+  // FUNCTION Display Results
+
+  void showBook(Book book){
+
+    // Print Out Data
+
+    std::cout << "ID     " << book.id         << std::endl;
+    std::cout << "Name   " << book.name       << std::endl;
+    std::cout << "Author " << book.authorName << std::endl;
+    std::cout << "Price  " << book.price      << std::endl;
+  }
 };
 
-
+// CLASS Frontend Class
 
 class Frontend{
-public:
-  BookStore myBookStore;
+
+  // FUNCTION Main Screen
 
   void mainScreen(){
-    clear();
 
     int operation;
 
-    std::cout << "0 : Exit" << std::endl;
+    // Print Actions
+
+    std::cout << "0 : Exit" std::endl;
     std::cout << "1 : Add Book" << std::endl;
     std::cout << "2 : Remove Book" << std::endl;
-    std::cout << "3 : View Books" << std::endl;
+    std::cout << "3 : Find Book" << std::endl;
 
     std::cin >> operation;
 
-    switch (operation) {
+    // Switch Menus
+
+    switch(operation){
       case 0:
-        close();
         break;
 
       case 1:
-        addBook();
+        addBookScreen();
+        break;
+
+      // TODO: Add Remove Book
+
+      case 2:
         break;
 
       case 3:
-        viewBook();
+        findBookScreen();
         break;
 
       default:
-        close();
         break;
     }
+
   }
 
-  void viewBook(){
-    clear();
+  // FUNCTION Add Book Menu
 
-    unsigned int id;
+  void addBookScreen(){
 
-    std::cout << "Book ID: " << std::endl;
+    // VARIABLES Create Place Holders
+
+    int id;
+    std::string name;
+    std::string authorName;
+    float price;
+
+    // ACTION Recive I/O
+
+    std::cout << "ID:          " << std::endl;
     std::cin >> id;
+    std::cout << "Name:        " << std::endl;
+    std::cin >> name;
+    std::cout << "Author Name: " << std::endl;
+    std::cin >> authorName;
+    std::cout << "Price:       " << std::endl;
+    std::cin >> price;
 
-    clear();
+    // ACTION Create and Add Book
 
-    std::cout << "Name: " << myBookStore.inStore[id].name << std::endl;
-    std::cout << "Author Name: " << myBookStore.inStore[id].authorName << std::endl;
-    std::cout << "Price: " << myBookStore.inStore[id].price << std::endl;
+    BookStore::Book book = {id, name, authorName, price};
+    myBookStore.addBook(book);
 
-    std::string _continue;
+    // ACTION Move Back to mainScreen
 
-    std::cout << "Continue? [Y/n]" << std::endl;
-    std::cin >> _continue;
+    mainScreen();
 
-    if (_continue == "n"){
-      close();
+  }
+
+  void findBookScreen(){
+    // VARIABLES Create Place Holders
+
+    int id;
+    std::string name;
+    std::string authorName;
+    float price;
+
+    // ACTION Recive I/O
+
+    std::cout << "ID:          " << std::endl;
+    std::cin >> id;
+    std::cout << "Name:        " << std::endl;
+    std::cin >> name;
+    std::cout << "Author Name: " << std::endl;
+    std::cin >> authorName;
+    std::cout << "Price:       " << std::endl;
+    std::cin >> price;
+
+    // ACTION Create and Find Book
+
+    BookStore::Book book = {id, name, authorName, price};
+    int uuid = myBookStore.findBook(book);
+
+    // ACTION Display Results
+
+    if (uuid == -1){
+      std::cout << "Hmmm. We could not find your requested book!" << std::endl;
     }
 
     else{
-      mainScreen();
+      std::cout << book.name << " has the UUID " << uuid << std::endl;
     }
+
+    // ACTION Move Back to mainScreen
 
     mainScreen();
-  }
-
-  void addBook(){
-    clear();
-
-    unsigned int id;
-    std::string name;
-    std::string authorFirst;
-    std::string authorSecond;
-    float price;
-
-    std::cout << "Book ID: " << std::endl;
-    std::cin >> id;
-    std::cout << "Book Name: " << std::endl;
-    std::cin >> name;
-    std::cout << "Author Forename Name: " << std::endl;
-    std::cin >> authorFirst;
-    std::cout << "Author Surname Name: " << std::endl;
-    std::cin >> authorSecond;
-    std::cout << "Price: " << std::endl;
-    std::cin >> price;
-
-    BookStore::Book book = {id, name, authorFirst, authorSecond, price};
-
-    BookStore::Book a = myBookStore.addBook(book);
-    BookStore::Book b = myBookStore.inStore[myBookStore.inStoreNext - 1];
-
-    if (myBookStore.compare(a, b)){
-      mainScreen();
-    }
-
-    if (!(myBookStore.compare(a, b))){
-      std::cout << std::endl << "Error." << std::endl;
-    }
 
   }
+
 };
 
+// FUNCTION Main Function
+
 int main(){
+
+  // ACTION Create Frontend Class
+
   Frontend front;
   front.mainScreen();
 
