@@ -165,7 +165,7 @@ class Frontend{
     std::string authorName;
     float price;
 
-    // ACTION Recive I/O
+    // Recive I/O
 
     std::cout << "ID:          " << std::endl;
     std::cin >> id;
@@ -176,12 +176,12 @@ class Frontend{
     std::cout << "Price:       " << std::endl;
     std::cin >> price;
 
-    // ACTION Create and Add Book
+    // Create and Add Book
 
     BookStore::Book book = {id, name, authorName, price};
     myBookStore.addBook(book);
 
-    // ACTION Move Back to mainScreen
+    // Move Back to mainScreen
 
     mainScreen();
 
@@ -195,7 +195,7 @@ class Frontend{
     std::string authorName;
     float price;
 
-    // ACTION Recive I/O
+    // Recive I/O
 
     std::cout << "ID:          " << std::endl;
     std::cin >> id;
@@ -206,12 +206,12 @@ class Frontend{
     std::cout << "Price:       " << std::endl;
     std::cin >> price;
 
-    // ACTION Create and Find Book
+    // Create and Find Book
 
     BookStore::Book book = {id, name, authorName, price};
     int uuid = myBookStore.findBook(book);
 
-    // ACTION Display Results
+    // Display Results
 
     if (uuid == -1){
       std::cout << "Hmmm. We could not find your requested book!" << std::endl;
@@ -221,7 +221,7 @@ class Frontend{
       std::cout << book.name << " has the UUID " << uuid << std::endl;
     }
 
-    // ACTION Move Back to mainScreen
+    // Move Back to mainScreen
 
     mainScreen();
 
@@ -233,7 +233,7 @@ class Frontend{
 
 int main(){
 
-  // ACTION Create Frontend Class
+  // Create Frontend Class
 
   Frontend front;
   front.mainScreen();
